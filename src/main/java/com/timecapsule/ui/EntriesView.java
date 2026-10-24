@@ -14,6 +14,7 @@ import com.timecapsule.ui.widgets.MediaViewer;
 import com.timecapsule.ui.widgets.MoodStamp;
 import com.timecapsule.ui.widgets.TapedPhoto;
 import com.timecapsule.ui.widgets.WaxSeal;
+import com.timecapsule.audio.SoundService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -153,11 +154,17 @@ public class EntriesView {
 
         Button fresh = new Button("＋  Press a new memory");
         fresh.getStyleClass().add("nav-btn");
-        fresh.setOnAction(e -> showDetail(0));
+        fresh.setOnAction(e -> {
+            SoundService.instance().playClick();
+            showDetail(0);
+        });
 
         Button back = new Button("←  Contents");
         back.getStyleClass().add("nav-btn");
-        back.setOnAction(e -> navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD));
+        back.setOnAction(e -> {
+            SoundService.instance().playClick();
+            navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD);
+        });
 
         VBox left = new VBox(8, heading, searchField, tagBox, scroll, fresh, back);
         left.setAlignment(Pos.TOP_LEFT);
@@ -399,6 +406,7 @@ public class EntriesView {
         Button save = new Button(existing == null ? "Press into the book" : "Save");
         save.getStyleClass().add("ink-btn");
         save.setOnAction(e -> {
+            SoundService.instance().playClick();
             try {
                 Instant seal = bound[0] ? toInstant(sealPicker.getValue()) : null;
                 Memory saved = existing == null
@@ -408,6 +416,7 @@ public class EntriesView {
                         : JournalManager.updateEntry(existing.getId(), titleField.getText(),
                                 bodyArea.getText(), moodBox.getValue(),
                                 splitTags(tagsField.getText()), seal);
+                SoundService.instance().playEntrySaved();
                 showDetail(saved.getId());
             } catch (JournalException ex) {
                 error.setText(ex.getMessage());
@@ -510,13 +519,22 @@ public class EntriesView {
 
             Button addPhoto = new Button("＋  Press a photo");
             addPhoto.getStyleClass().add("nav-btn");
-            addPhoto.setOnAction(e -> attachWithChooser(existing.getId(), "photo"));
+            addPhoto.setOnAction(e -> {
+                SoundService.instance().playClick();
+                attachWithChooser(existing.getId(), "photo");
+            });
             Button addAudio = new Button("＋  Tuck a voice clip");
             addAudio.getStyleClass().add("nav-btn");
-            addAudio.setOnAction(e -> attachWithChooser(existing.getId(), "audio"));
+            addAudio.setOnAction(e -> {
+                SoundService.instance().playClick();
+                attachWithChooser(existing.getId(), "audio");
+            });
             Button addClip = new Button("＋  Slip in a moving picture");
             addClip.getStyleClass().add("nav-btn");
-            addClip.setOnAction(e -> attachWithChooser(existing.getId(), "video"));
+            addClip.setOnAction(e -> {
+                SoundService.instance().playClick();
+                attachWithChooser(existing.getId(), "video");
+            });
             box.getChildren().addAll(addPhoto, addAudio, addClip);
         }
 
@@ -587,7 +605,10 @@ public class EntriesView {
     private Button backToList() {
         Button back = new Button("←  Entries");
         back.getStyleClass().add("nav-btn");
-        back.setOnAction(e -> showList());
+        back.setOnAction(e -> {
+            SoundService.instance().playClick();
+            showList();
+        });
         return back;
     }
 

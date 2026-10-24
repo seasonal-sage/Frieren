@@ -7,6 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+import com.timecapsule.audio.SoundService;
+
 /**
  * Page-turn router (Module: UI). Every screen is a "spread" shown inside
  * the same open book; navigation animates as a slide + fade leaf turn.
@@ -73,6 +75,7 @@ public class BookNavigator extends StackPane {
                 turning = false;
             });
             in.play();
+            SoundService.instance().playPageTurn();
         });
         out.play();
     }

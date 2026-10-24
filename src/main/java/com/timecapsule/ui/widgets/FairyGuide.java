@@ -18,6 +18,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import com.timecapsule.audio.SoundService;
+
 /**
  * Frieren, guardian of the grimoire: a summonable companion. She rests as a
  * tiny ✦ tab (blocking nothing) and appears — sprite plus tailed speech
@@ -132,12 +134,14 @@ public class FairyGuide extends StackPane {
     public void summon() {
         assembly.setVisible(true);
         recall.setVisible(false);
+        SoundService.instance().playFrierenGreet();
         playTypewriter(lastLine.isEmpty() ? "…" : lastLine);
     }
 
     /** Stores a line and appears with it (seal openings, login answers). */
     public void announce(String line) {
         lastLine = line == null ? "" : line;
+        SoundService.instance().playSealCrack();
         summon();
     }
 

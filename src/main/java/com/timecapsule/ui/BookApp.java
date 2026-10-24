@@ -15,6 +15,7 @@ import com.timecapsule.core.Memory;
 import com.timecapsule.scheduler.CapsuleScheduler;
 import com.timecapsule.storage.UserDao;
 import com.timecapsule.ui.widgets.WoodTexture;
+import com.timecapsule.audio.SoundService;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -67,6 +68,7 @@ public class BookApp extends Application {
     @Override
     public void start(Stage stage) {
         loadFonts();
+        SoundService.instance().loadAll();
 
         StackPane desk = new StackPane();
         desk.getStyleClass().add("desk");
@@ -114,7 +116,10 @@ public class BookApp extends Application {
                 return fairyBrain.lineFor("cover");
             }
         };
-        greet.setOnSucceeded(e -> frieren.say(greet.getValue()));
+        greet.setOnSucceeded(e -> {
+            frieren.say(greet.getValue());
+            SoundService.instance().playFrierenGreet();
+        });
         greet.setOnFailed(e -> frieren.say(new StaticFairyLines().lineFor("cover")));
         Thread greeter = new Thread(greet, "frieren-greet");
         greeter.setDaemon(true);
@@ -226,6 +231,7 @@ public class BookApp extends Application {
         book.setAlignment(Pos.CENTER);
 
         clasp.setOnAction(e -> {
+            SoundService.instance().playClick();
             String name = nameField.getText();
             try {
                 User keeper = registerMode[0]
@@ -292,6 +298,15 @@ public class BookApp extends Application {
         statsBtn.getStyleClass().add("nav-btn");
         statsBtn.setOnAction(e -> statsView.show());
         chapters.getChildren().add(statsBtn);
+        Button soundBtn = new Button(SoundService.instance().isEnabled() ? "♫ Sound on" : "♫ Sound off");
+        soundBtn.getStyleClass().add("nav-btn");
+        soundBtn.setOnAction(e -> {
+            boolean now = !SoundService.instance().isEnabled();
+            SoundService.instance().setEnabled(now);
+            soundBtn.setText(now ? "♫ Sound on" : "♫ Sound off");
+            SoundService.instance().playClick();
+        });
+        chapters.getChildren().add(soundBtn);
         Button copyBtn = new Button("Copy & notes");
         copyBtn.getStyleClass().add("nav-btn");
         copyBtn.setOnAction(e -> backCover.show());

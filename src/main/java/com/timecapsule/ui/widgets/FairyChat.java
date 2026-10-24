@@ -10,6 +10,7 @@ import com.timecapsule.core.Memory;
 import com.timecapsule.search.EntrySearch;
 import com.timecapsule.storage.ChatDao;
 import com.timecapsule.ui.PageTracker;
+import com.timecapsule.audio.SoundService;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -197,6 +198,7 @@ public class FairyChat extends VBox {
             String reply = current.getValue();
             remember("assistant", reply);
             addFrierenRow(reply);
+            SoundService.instance().playFrierenSpeak();
             hideThinking();
         });
         current.setOnFailed(e -> {
