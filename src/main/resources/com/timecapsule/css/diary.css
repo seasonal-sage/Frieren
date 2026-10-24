@@ -239,6 +239,65 @@
     -fx-text-fill: white;
     -fx-effect: dropshadow(gaussian, rgba(215, 220, 235, 0.65), 14, 0.3, 0, 0);
 }
+.fairy-talk {
+    -fx-background-color: transparent;
+    -fx-text-fill: -tc-ink-soft;
+    -fx-font-family: 'Caveat', 'Segoe Script', cursive;
+    -fx-font-size: 17px;
+    -fx-cursor: hand;
+    -fx-padding: 0 8 0 8;
+    -fx-underline: true;
+}
+.fairy-talk:hover {
+    -fx-text-fill: -tc-seal;
+}
+
+/* Conversation card with Frieren. */
+.fairy-chat {
+    -fx-background-color: linear-gradient(to bottom, #fbf5e3, #eee1bf);
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 16, 0.3, 0, 5);
+}
+.chat-head {
+    -fx-font-family: 'Pirata One', serif;
+    -fx-font-size: 18px;
+    -fx-text-fill: -tc-ink;
+}
+.chat-user {
+    -fx-background-color: rgba(58, 49, 40, 0.14);
+    -fx-background-radius: 10;
+    -fx-padding: 5 10 5 10;
+    -fx-font-family: 'Crimson Text', Georgia, serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: -tc-ink;
+}
+.chat-frieren {
+    -fx-background-color: #efe2c2;
+    -fx-background-radius: 10;
+    -fx-padding: 5 10 5 10;
+    -fx-font-family: 'Crimson Text', Georgia, serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: -tc-ink;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 4, 0.2, 0, 1);
+}
+.chat-tag {
+    -fx-font-size: 15px;
+    -fx-text-fill: -tc-seal;
+}
+.chat-thinking {
+    -fx-font-family: 'Caveat', 'Segoe Script', cursive;
+    -fx-font-size: 18px;
+    -fx-text-fill: -tc-ink-soft;
+}
+.chat-send {
+    -fx-font-size: 18px;
+    -fx-padding: 2 14 2 14;
+}
+.chat-hint {
+    -fx-font-family: 'Crimson Text', Georgia, serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: -tc-ink-soft;
+}
 
 /* Cover identity form: dark fields, silver ink, readable errors. */
 .cover-field {
@@ -360,6 +419,119 @@
 }
 .date-picker {
     -fx-font-family: 'Crimson Text', Georgia, serif;
+    -fx-font-size: 16px;
+}
+.date-picker > .text-field {
+    -fx-background-color: rgba(255, 255, 255, 0.35);
+    -fx-text-fill: -tc-ink;
+    -fx-prompt-text-fill: -tc-ink-soft;
+    -fx-background-radius: 6 0 0 6;
+    -fx-border-color: rgba(111, 98, 80, 0.5);
+    -fx-border-width: 1;
+    -fx-border-radius: 6 0 0 6;
+}
+.date-picker:focused > .text-field {
+    -fx-border-color: -tc-ink-soft;
+    -fx-background-color: rgba(255, 255, 255, 0.55);
+}
+.date-picker > .arrow-button {
+    -fx-background-color: rgba(120, 90, 40, 0.18);
+    -fx-background-radius: 0 6 6 0;
+    -fx-border-color: rgba(111, 98, 80, 0.5);
+    -fx-border-width: 1;
+    -fx-border-radius: 0 6 6 0;
+    -fx-cursor: hand;
+}
+.date-picker > .arrow-button > .arrow {
+    -fx-background-color: -tc-ink;
+}
+.date-picker-popup {
+    -fx-background-color: -tc-paper;
+    -fx-border-color: -tc-ink-soft;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 12, 0.25, 0, 4);
+}
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: transparent;
+}
+.date-picker-popup > .month-year-pane > .secondary-label {
+    -fx-text-fill: -tc-ink-soft;
+}
+.date-picker-popup .day-name-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -tc-ink-soft;
+    -fx-font-family: 'Crimson Text', Georgia, serif;
+}
+.date-picker-popup .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -tc-ink;
+    -fx-font-family: 'Crimson Text', Georgia, serif;
+    -fx-border-color: transparent;
+}
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: rgba(120, 90, 40, 0.18);
+}
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: -tc-seal;
+    -fx-text-fill: #f6efdb;
+}
+.date-picker-popup .previous-month,
+.date-picker-popup .next-month {
+    -fx-text-fill: -tc-ink-soft;
+    -fx-opacity: 0.55;
+}
+.date-picker-popup .today {
+    -fx-border-color: -tc-ink-soft;
+    -fx-border-width: 1;
+}
+
+/* Combo boxes (mood picker, weekly aims). */
+.combo-box {
+    -fx-background-color: rgba(255, 255, 255, 0.35);
+    -fx-background-radius: 6;
+    -fx-border-color: rgba(111, 98, 80, 0.5);
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-cursor: hand;
+}
+.combo-box:focused {
+    -fx-border-color: -tc-ink-soft;
+    -fx-background-color: rgba(255, 255, 255, 0.55);
+}
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -tc-ink;
+    -fx-font-family: 'Caveat', 'Segoe Script', cursive;
+    -fx-font-size: 20px;
+    -fx-padding: 2 8 2 8;
+}
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+.combo-box .arrow-button .arrow {
+    -fx-background-color: -tc-ink;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: -tc-paper;
+    -fx-border-color: -tc-ink-soft;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 12, 0.25, 0, 4);
+}
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -tc-ink;
+    -fx-font-family: 'Caveat', 'Segoe Script', cursive;
+    -fx-font-size: 20px;
+    -fx-padding: 2 10 2 10;
+}
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: rgba(120, 90, 40, 0.18);
+}
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: rgba(163, 22, 33, 0.16);
+    -fx-text-fill: -tc-seal;
 }
 
 /* Ink buttons for parchment pages. */
@@ -418,6 +590,9 @@
     -fx-padding: 10;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 10, 0.25, 0, 3);
 }
+.polaroid:hover {
+    -fx-effect: dropshadow(gaussian, rgba(190, 150, 60, 0.85), 14, 0.35, 0, 3);
+}
 .tape {
     -fx-background-color: rgba(233, 220, 180, 0.8);
     -fx-min-width: 64px;
@@ -440,6 +615,53 @@
 }
 .audio-btn:hover {
     -fx-background-color: rgba(120, 90, 40, 0.12);
+}
+
+/* Keepsake rows that open their own little window. */
+.media-row {
+    -fx-padding: 4 8 4 8;
+    -fx-background-radius: 8;
+}
+.media-row:hover {
+    -fx-background-color: rgba(120, 90, 40, 0.12);
+}
+
+/* The little beholding window for photos, clips, and moving pictures. */
+.media-card {
+    -fx-background-color: linear-gradient(to bottom, #fbf5e3, #eee1bf);
+}
+.media-title {
+    -fx-font-family: 'Pirata One', serif;
+    -fx-font-size: 20px;
+    -fx-text-fill: -tc-ink;
+}
+.media-time {
+    -fx-font-family: 'Crimson Text', Georgia, serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: -tc-ink-soft;
+}
+.media-slider {
+    -fx-pref-width: 220;
+}
+
+/* Moving-picture tiles beside the photos. */
+.clip-tile {
+    -fx-background-color: rgba(10, 8, 12, 0.88);
+    -fx-background-radius: 8;
+    -fx-padding: 12 10 10 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 10, 0.25, 0, 3);
+}
+.clip-tile:hover {
+    -fx-effect: dropshadow(gaussian, rgba(190, 150, 60, 0.85), 14, 0.35, 0, 3);
+}
+.clip-play {
+    -fx-font-size: 28px;
+    -fx-text-fill: -tc-silver;
+}
+.clip-name {
+    -fx-font-family: 'Crimson Text', Georgia, serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: -tc-silver;
 }
 
 /* The sealing spell: wax-red, parchment lettering, blackletter voice. */

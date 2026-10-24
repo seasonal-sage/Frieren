@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -43,6 +44,7 @@ public class CapsulesView {
     }
 
     public void show() {
+        PageTracker.set("capsules");
         navigator.show(buildSpread(), BookNavigator.Direction.FORWARD);
         frieren.say(lines.lineFor("capsules"));
     }
@@ -95,9 +97,17 @@ public class CapsulesView {
         }
         Button back = new Button("←  Contents");
         back.getStyleClass().add("nav-btn");
-        back.setOnAction(e -> navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD));
-        left.getChildren().add(back);
-        DiaryPage leftPage = new DiaryPage(left).ruled();
+        back.setOnAction(e -> {
+            PageTracker.set("contents");
+            navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD);
+        });
+        ScrollPane scroll = new ScrollPane(left);
+        scroll.setFitToWidth(true);
+        scroll.setPrefHeight(460);
+        scroll.getStyleClass().add("clear-scroll");
+        VBox leftCol = new VBox(8, scroll, back);
+        leftCol.setAlignment(Pos.TOP_LEFT);
+        DiaryPage leftPage = new DiaryPage(leftCol).ruled();
 
         VBox right = new VBox(10);
         right.setAlignment(Pos.CENTER);

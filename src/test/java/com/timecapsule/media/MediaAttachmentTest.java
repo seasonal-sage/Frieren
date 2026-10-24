@@ -67,8 +67,15 @@ class MediaAttachmentTest {
     }
 
     @Test
-    void unsupportedFilesRejectedCleanly() throws Exception {
-        Path bad = sourceFile("notes.txt");
+    void clipAttachRoundTrip() throws Exception {
+        Media clip = JournalManager.attachMedia(entry.getId(), sourceFile("spell.mp4"));
+        assertEquals(MediaKind.VIDEO, clip.kind());
+        assertTrue(Files.isRegularFile(clip.getFilePath()), "Vault must hold a copy");
+        assertEquals(1, JournalManager.listMedia(entry.getId()).size());
+    }
+
+    @Test
+    void unsupportedFilesRejectedCleanly() throws Exception {        Path bad = sourceFile("notes.txt");
         assertThrows(MediaException.class, () -> JournalManager.attachMedia(entry.getId(), bad));
         assertTrue(JournalManager.listMedia(entry.getId()).isEmpty());
     }

@@ -32,6 +32,7 @@ public class FairyGuide extends StackPane {
     private final VBox card = new VBox(0);
     private final VBox assembly = new VBox(0);
     private final Button recall = new Button("✦");
+    private Runnable onTalkRequest;
     private String lastLine = "";
     private Timeline typer;
 
@@ -58,6 +59,17 @@ public class FairyGuide extends StackPane {
         bubble.setAlignment(Pos.TOP_LEFT);
         StackPane.setAlignment(close, Pos.TOP_RIGHT);
         StackPane.setMargin(text, new Insets(26, 30, 12, 14));
+
+        Button talk = new Button("Talk");
+        talk.getStyleClass().add("fairy-talk");
+        talk.setOnAction(e -> {
+            if (onTalkRequest != null) {
+                onTalkRequest.run();
+            }
+        });
+        bubble.getChildren().add(talk);
+        StackPane.setAlignment(talk, Pos.BOTTOM_RIGHT);
+        StackPane.setMargin(talk, new Insets(0, 8, 6, 0));
 
         Region tail = new Region();
         tail.setPrefSize(18, 18);
@@ -98,6 +110,11 @@ public class FairyGuide extends StackPane {
         StackPane.setAlignment(assembly, Pos.BOTTOM_LEFT);
         StackPane.setAlignment(recall, Pos.BOTTOM_LEFT);
         StackPane.setMargin(recall, new Insets(0, 0, 12, 12));
+    }
+
+    /** Where the Talk button opens the conversation (wired by the app). */
+    public void setOnTalkRequest(Runnable onTalkRequest) {
+        this.onTalkRequest = onTalkRequest;
     }
 
     /**

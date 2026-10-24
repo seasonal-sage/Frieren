@@ -36,6 +36,7 @@ public class BackCoverView {
     }
 
     public void show() {
+        PageTracker.set("export");
         navigator.show(buildSpread(), BookNavigator.Direction.FORWARD);
         frieren.say(lines.lineFor("export"));
     }
@@ -62,7 +63,10 @@ public class BackCoverView {
 
         Button back = new Button("←  Contents");
         back.getStyleClass().add("nav-btn");
-        back.setOnAction(e -> navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD));
+        back.setOnAction(e -> {
+            PageTracker.set("contents");
+            navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD);
+        });
 
         left.getChildren().addAll(heading, desc, json, pdf, status, back);
         DiaryPage leftPage = new DiaryPage(left).ruled();

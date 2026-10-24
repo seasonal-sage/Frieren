@@ -4,7 +4,8 @@ package com.timecapsule.media;
 public enum MediaKind {
 
     PHOTO("Photo"),
-    AUDIO("Audio");
+    AUDIO("Audio"),
+    VIDEO("Moving picture");
 
     private final String label;
 
@@ -33,6 +34,10 @@ public enum MediaKind {
             case "ogg":
             case "flac":
                 return AUDIO;
+            case "mp4":
+            case "m4v":
+            case "mov":
+                return VIDEO;
             default:
                 throw new MediaException("That file's magic is unknown to the book (." + ext + ").");
         }

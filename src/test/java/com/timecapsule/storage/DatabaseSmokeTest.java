@@ -38,7 +38,8 @@ class DatabaseSmokeTest {
             }
         }
         assertTrue(tables.containsAll(Set.of(
-                "users", "memories", "media", "habits", "habit_logs", "audit_logs")),
+                "users", "memories", "media", "habits", "habit_logs", "audit_logs",
+                "chat_messages")),
                 "Missing tables, found: " + tables);
     }
 

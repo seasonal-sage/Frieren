@@ -1,6 +1,8 @@
 package com.timecapsule.ui.widgets;
 
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
@@ -40,6 +42,8 @@ public class TapedPhoto extends StackPane {
         StackPane.setMargin(right, new javafx.geometry.Insets(2, 14, 0, 0));
 
         getChildren().addAll(frame, left, right);
+        setCursor(Cursor.HAND);
+        Tooltip.install(this, new Tooltip("Click to behold"));
     }
 
     private static Region tape(double angle) {

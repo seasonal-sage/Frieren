@@ -5,7 +5,7 @@ import java.time.Instant;
 
 /**
  * One attachment on a memory (Module: Media Processing). Abstract parent of
- * {@link Photo} and {@link Audio} — inheritance + polymorphism showcase.
+ * {@link Photo}, {@link Audio}, and {@link Clip} — inheritance + polymorphism showcase.
  */
 public abstract class Media {
 

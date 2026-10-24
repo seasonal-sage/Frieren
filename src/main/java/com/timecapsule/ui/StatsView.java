@@ -44,6 +44,7 @@ public class StatsView {
     }
 
     public void show() {
+        PageTracker.set("stats");
         navigator.show(buildSpread(), BookNavigator.Direction.FORWARD);
         frieren.say(lines.lineFor("stats"));
     }
@@ -86,7 +87,10 @@ public class StatsView {
 
         Button back = new Button("←  Contents");
         back.getStyleClass().add("nav-btn");
-        back.setOnAction(e -> navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD));
+        back.setOnAction(e -> {
+            PageTracker.set("contents");
+            navigator.show(contentsScreen.get(), BookNavigator.Direction.BACKWARD);
+        });
         left.getChildren().add(back);
         DiaryPage leftPage = new DiaryPage(left).ruled();
 

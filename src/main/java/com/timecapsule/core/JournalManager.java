@@ -119,6 +119,48 @@ public final class JournalManager {
         }
     }
 
+    /**
+     * Moves a capsule's date without touching its sealed body (which cannot
+     * be decrypted early). Only already-sealed entries can be re-bound.
+     */
+    public static Memory resealEntry(long id, Instant newDate) {
+        User user = requireUser();
+        if (newDate == null) {
+            throw new JournalException("Pick the new day first.");
+        }
+        Memory current = getEntry(id); // Ownership check.
+        if (!current.isLocked()) {
+            throw new JournalException("Only sealed capsules can be re-bound.");
+        }
+        try {
+            MEMORIES.updateLock(id, user.getId(), true, newDate);
+            AuditLogger.log(user.getId(), "entry.reseal " + id);
+            return getEntry(id);
+        } catch (JournalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new JournalException("The spell would not move.", e);
+        }
+    }
+
+    /** Lifts the seal early — the body reads open from now on. */
+    public static Memory releaseSeal(long id) {
+        User user = requireUser();
+        Memory current = getEntry(id); // Ownership check.
+        if (!current.isLocked()) {
+            throw new JournalException("That page was never sealed.");
+        }
+        try {
+            MEMORIES.updateLock(id, user.getId(), false, null);
+            AuditLogger.log(user.getId(), "entry.release " + id);
+            return getEntry(id);
+        } catch (JournalException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new JournalException("The seal would not lift.", e);
+        }
+    }
+
     /** Sealed entries whose date has come (feeds the Day-5 scheduler). */
     public static List<Memory> listDueEntries() {
         User user = requireUser();

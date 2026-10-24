@@ -30,8 +30,16 @@ class MediaFactoryTest {
     }
 
     @Test
-    void unknownMagicRejected() {
-        assertThrows(MediaException.class, () -> MediaFactory.create(1, Path.of("vault/doc.txt")));
+    void videosDetected() {
+        for (String ext : new String[]{"mp4", "M4V", "mov"}) {
+            Media media = MediaFactory.create(1, Path.of("vault/clip." + ext));
+            assertEquals(MediaKind.VIDEO, media.kind());
+            assertTrue(media instanceof Clip);
+        }
+    }
+
+    @Test
+    void unknownMagicRejected() {        assertThrows(MediaException.class, () -> MediaFactory.create(1, Path.of("vault/doc.txt")));
         assertThrows(MediaException.class, () -> MediaFactory.create(1, Path.of("vault/run.exe")));
         assertThrows(MediaException.class, () -> MediaFactory.create(1, Path.of("vault/noext")));
         assertThrows(MediaException.class, () -> MediaFactory.create(1, null));
@@ -41,8 +49,10 @@ class MediaFactoryTest {
     void rowsRebuildSubtypes() {
         Media photo = MediaFactory.fromRow(7, 3, "PHOTO", Path.of("v/a.jpg"), null);
         Media audio = MediaFactory.fromRow(8, 3, "AUDIO", Path.of("v/b.mp3"), null);
+        Media clip = MediaFactory.fromRow(9, 3, "VIDEO", Path.of("v/c.mp4"), null);
         assertTrue(photo instanceof Photo);
         assertTrue(audio instanceof Audio);
+        assertTrue(clip instanceof Clip);
         assertEquals(7, photo.getId());
         assertThrows(MediaException.class,
                 () -> MediaFactory.fromRow(9, 3, "SCROLL", Path.of("v/c"), null));

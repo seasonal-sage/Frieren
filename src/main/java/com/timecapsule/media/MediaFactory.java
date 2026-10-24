@@ -5,7 +5,7 @@ import java.time.Instant;
 
 /**
  * Builds the right {@link Media} subtype (Factory Pattern). Callers never
- * touch {@link Photo} or {@link Audio} constructors for new attachments.
+ * touch {@link Photo}, {@link Audio}, or {@link Clip} constructors for new attachments.
  */
 public final class MediaFactory {
 
@@ -38,6 +38,8 @@ public final class MediaFactory {
                 return new Photo(id, memoryId, file, createdAt);
             case AUDIO:
                 return new Audio(id, memoryId, file, createdAt);
+            case VIDEO:
+                return new Clip(id, memoryId, file, createdAt);
             default:
                 throw new MediaException("Unsupported attachment kind: " + kind);
         }

@@ -55,7 +55,16 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    role       TEXT NOT NULL,
+    content    TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_memories_user_unlock ON memories (user_id, unlock_date);
 CREATE INDEX IF NOT EXISTS idx_memories_user_created ON memories (user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_media_memory ON media (memory_id);
 CREATE INDEX IF NOT EXISTS idx_habit_logs_habit_date ON habit_logs (habit_id, log_date);
+CREATE INDEX IF NOT EXISTS idx_chat_user_id ON chat_messages (user_id, id);

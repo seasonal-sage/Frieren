@@ -124,4 +124,34 @@ class JournalManagerTest {
         assertThrows(JournalException.class,
                 () -> JournalManager.createEntry("T", "B", null, List.of(), null));
     }
+
+    @Test
+    void resealMovesTheDate() {
+        Memory sealed = JournalManager.createEntry(
+                "Capsule", "Hidden.", Mood.HAPPY, List.of(),
+                Instant.now().plus(30, ChronoUnit.DAYS));
+        Memory moved = JournalManager.resealEntry(
+                sealed.getId(), Instant.now().plus(60, ChronoUnit.DAYS));
+        assertTrue(moved.isLocked());
+        assertNull(moved.getBody(), "Body stays sealed across a re-date");
+        assertTrue(moved.getUnlockDate().isAfter(sealed.getUnlockDate()));
+    }
+
+    @Test
+    void releaseOpensEarly() {
+        Memory sealed = JournalManager.createEntry(
+                "Capsule", "Hidden.", Mood.HAPPY, List.of(),
+                Instant.now().plus(30, ChronoUnit.DAYS));
+        Memory open = JournalManager.releaseSeal(sealed.getId());
+        assertEquals("Hidden.", open.getBody());
+    }
+
+    @Test
+    void resealRefusesOpenEntries() {
+        Memory plain = JournalManager.createEntry(
+                "Plain", "No seal.", Mood.CALM, List.of(), null);
+        assertThrows(JournalException.class, () -> JournalManager.resealEntry(
+                plain.getId(), Instant.now().plus(10, ChronoUnit.DAYS)));
+        assertThrows(JournalException.class, () -> JournalManager.releaseSeal(plain.getId()));
+    }
 }

@@ -2,7 +2,9 @@ package com.timecapsule.ui;
 
 import com.timecapsule.ui.widgets.CandleCluster;
 import com.timecapsule.ui.widgets.DiaryPage;
+import com.timecapsule.ui.widgets.FairyChat;
 import com.timecapsule.ui.widgets.FairyGuide;
+import com.timecapsule.ai.OllamaFairyProvider;
 import com.timecapsule.audit.AuditLogger;
 import com.timecapsule.auth.AuthException;
 import com.timecapsule.auth.AuthService;
@@ -16,6 +18,7 @@ import com.timecapsule.ui.widgets.WoodTexture;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -51,6 +54,7 @@ public class BookApp extends Application {
 
     private BookNavigator navigator;
     private FairyGuide frieren;
+    private FairyChat fairyChat;
     private EntriesView entriesView;
     private BackCoverView backCover;
     private CapsulesView capsulesView;
@@ -58,7 +62,7 @@ public class BookApp extends Application {
     private HabitsView habitsView;
     private StatsView statsView;
     private CapsuleScheduler capsuleScheduler;
-    private final FairyDialogueProvider fairyLines = new StaticFairyLines();
+    private final OllamaFairyProvider fairyBrain = new OllamaFairyProvider();
 
     @Override
     public void start(Stage stage) {
@@ -82,6 +86,7 @@ public class BookApp extends Application {
 
         navigator = new BookNavigator();
         navigator.show(buildClosedBook());
+        PageTracker.set("cover");
 
         // Book center-stage, candle cluster resting on the desk to the right.
         VBox candleCol = new VBox(new CandleCluster());
@@ -92,19 +97,35 @@ public class BookApp extends Application {
 
         desk.getChildren().addAll(wood, lamplight, row);
 
-        // Frieren docks bottom-left and greets on the cover.
+        // Frieren docks bottom-left (chat perches above her) and greets on the cover.
         frieren = new FairyGuide();
-        StackPane.setAlignment(frieren, Pos.BOTTOM_LEFT);
-        StackPane.setMargin(frieren, new Insets(0, 0, 10, 24));
-        desk.getChildren().add(frieren);
-        frieren.say(fairyLines.lineFor("cover"));
+        fairyChat = new FairyChat(fairyBrain);
+        frieren.setOnTalkRequest(fairyChat::open);
+        VBox fairyDock = new VBox(8, fairyChat, frieren);
+        fairyDock.setAlignment(Pos.BOTTOM_LEFT);
+        fairyDock.setPickOnBounds(false);
+        StackPane.setAlignment(fairyDock, Pos.BOTTOM_LEFT);
+        StackPane.setMargin(fairyDock, new Insets(0, 0, 10, 24));
+        desk.getChildren().add(fairyDock);
+        // Cover greeting arrives off-thread: first model load must not freeze launch.
+        Task<String> greet = new Task<>() {
+            @Override
+            protected String call() {
+                return fairyBrain.lineFor("cover");
+            }
+        };
+        greet.setOnSucceeded(e -> frieren.say(greet.getValue()));
+        greet.setOnFailed(e -> frieren.say(new StaticFairyLines().lineFor("cover")));
+        Thread greeter = new Thread(greet, "frieren-greet");
+        greeter.setDaemon(true);
+        greeter.start();
 
-        entriesView = new EntriesView(navigator, frieren, fairyLines, stage, this::buildContentsSpread);
-        backCover = new BackCoverView(navigator, frieren, fairyLines, this::buildContentsSpread);
-        capsulesView = new CapsulesView(navigator, frieren, fairyLines, this::buildContentsSpread, entriesView);
-        calendarView = new CalendarView(navigator, frieren, fairyLines, this::buildContentsSpread, entriesView);
-        habitsView = new HabitsView(navigator, frieren, fairyLines, this::buildContentsSpread);
-        statsView = new StatsView(navigator, frieren, fairyLines, this::buildContentsSpread);
+        entriesView = new EntriesView(navigator, frieren, fairyBrain, stage, this::buildContentsSpread);
+        backCover = new BackCoverView(navigator, frieren, fairyBrain, this::buildContentsSpread);
+        capsulesView = new CapsulesView(navigator, frieren, fairyBrain, this::buildContentsSpread, entriesView);
+        calendarView = new CalendarView(navigator, frieren, fairyBrain, this::buildContentsSpread, entriesView);
+        habitsView = new HabitsView(navigator, frieren, fairyBrain, this::buildContentsSpread);
+        statsView = new StatsView(navigator, frieren, fairyBrain, this::buildContentsSpread);
 
         // The seal-watcher: daemon thread, announces through Frieren.
         capsuleScheduler = new CapsuleScheduler(() -> {
@@ -212,7 +233,9 @@ public class BookApp extends Application {
                         : AuthService.login(name, secretField.getText());
                 secretField.clear();
                 error.setText("");
+                fairyChat.loadForCurrentUser();
                 navigator.show(buildContentsSpread(), BookNavigator.Direction.FORWARD);
+                PageTracker.set("contents");
                 List<Memory> opened = capsuleScheduler.checkNow();
                 if (opened.isEmpty()) {
                 frieren.announce("The pages know you now, " + keeper.getUsername()
@@ -223,7 +246,7 @@ public class BookApp extends Application {
                 error.setText(ex.getMessage());
                 AuditLogger.log(null, "failed " + (registerMode[0] ? "register" : "login")
                         + " for '" + name + "'");
-                frieren.announce(fairyLines.lineFor("denied"));
+                frieren.announce(fairyBrain.lineFor("denied"));
                 shake(book);
             }
         });
@@ -277,7 +300,8 @@ public class BookApp extends Application {
         back.getStyleClass().add("nav-btn");
         back.setOnAction(e -> {
             navigator.show(buildClosedBook(), BookNavigator.Direction.BACKWARD);
-            frieren.say(fairyLines.lineFor("cover"));
+            PageTracker.set("cover");
+            frieren.say(fairyBrain.lineFor("cover"));
         });
         chapters.getChildren().add(back);
         DiaryPage left = new DiaryPage(chapters).ruled();

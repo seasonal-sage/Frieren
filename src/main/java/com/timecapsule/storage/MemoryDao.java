@@ -82,6 +82,26 @@ public class MemoryDao {
         }
     }
 
+    /**
+     * Moves only the seal (flag + date), leaving ciphertext untouched — the
+     * only safe edit for a locked entry whose body cannot be decrypted.
+     */
+    public void updateLock(long id, long userId, boolean locked, Instant unlockDate) throws SQLException {
+        String sql = "UPDATE memories SET is_locked = ?, unlock_date = ?,"
+                + " updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')"
+                + " WHERE id = ? AND user_id = ?";
+        Connection conn = DatabaseManager.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, locked ? 1 : 0);
+            setInstant(ps, 2, unlockDate);
+            ps.setLong(3, id);
+            ps.setLong(4, userId);
+            if (ps.executeUpdate() == 0) {
+                throw new SQLException("No such entry: " + id);
+            }
+        }
+    }
+
     public Optional<MemoryRow> findById(long id, long userId) throws SQLException {
         String sql = "SELECT " + COLUMNS + " FROM memories WHERE id = ? AND user_id = ?";
         Connection conn = DatabaseManager.getConnection();
