@@ -14,6 +14,7 @@ import com.timecapsule.core.JournalManager;
 import com.timecapsule.core.Memory;
 import com.timecapsule.scheduler.CapsuleScheduler;
 import com.timecapsule.storage.UserDao;
+import com.timecapsule.storage.ReminderDao;
 import com.timecapsule.ui.widgets.WoodTexture;
 import com.timecapsule.audio.SoundService;
 import javafx.animation.TranslateTransition;
@@ -41,6 +42,7 @@ import javafx.util.Duration;
 import javafx.stage.Stage;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -62,7 +64,9 @@ public class BookApp extends Application {
     private CalendarView calendarView;
     private HabitsView habitsView;
     private StatsView statsView;
+    private RemindersView remindersView;
     private CapsuleScheduler capsuleScheduler;
+    private final ReminderDao reminderDao = new ReminderDao();
     private final OllamaFairyProvider fairyBrain = new OllamaFairyProvider();
 
     @Override
@@ -131,6 +135,7 @@ public class BookApp extends Application {
         calendarView = new CalendarView(navigator, frieren, fairyBrain, this::buildContentsSpread, entriesView);
         habitsView = new HabitsView(navigator, frieren, fairyBrain, this::buildContentsSpread);
         statsView = new StatsView(navigator, frieren, fairyBrain, this::buildContentsSpread);
+        remindersView = new RemindersView(navigator, frieren, fairyBrain, this::buildContentsSpread);
 
         // The seal-watcher: daemon thread, announces through Frieren.
         capsuleScheduler = new CapsuleScheduler(() -> {
@@ -248,6 +253,7 @@ public class BookApp extends Application {
                         + ". Write — I'll keep the candles lit.");
                 }
                 // Otherwise the scheduler's announcement speaks instead.
+                announceDueReminders(keeper);
             } catch (AuthException ex) {
                 error.setText(ex.getMessage());
                 AuditLogger.log(null, "failed " + (registerMode[0] ? "register" : "login")
@@ -271,6 +277,26 @@ public class BookApp extends Application {
         shudder.play();
     }
 
+    /** Announces due reminders on app open, then advances repeating ones or marks one-time as fired. */
+    private void announceDueReminders(User keeper) {
+        try {
+            LocalDate today = LocalDate.now();
+            List<ReminderDao.ReminderRow> due = reminderDao.listDue(keeper.getId(), today);
+            for (ReminderDao.ReminderRow r : due) {
+                SoundService.instance().playSealCrack();
+                String msg = "Reminder for " + r.reminderDate() + ": " + r.message();
+                frieren.announce(msg);
+                if ("none".equals(r.repeatType())) {
+                    reminderDao.markFired(r.id());
+                } else {
+                    reminderDao.advance(r.id(), r.repeatType(), r.reminderDate());
+                }
+            }
+        } catch (Exception ignored) {
+            // Reminders are a nicety — never block entry.
+        }
+    }
+
     /** Table of contents spread (dashboard placeholder until Day 6). */
     private StackPane buildContentsSpread() {
         VBox chapters = new VBox(6);
@@ -290,6 +316,10 @@ public class BookApp extends Application {
         calendarBtn.getStyleClass().add("nav-btn");
         calendarBtn.setOnAction(e -> calendarView.show());
         chapters.getChildren().add(calendarBtn);
+        Button remindersBtn = new Button("Reminders");
+        remindersBtn.getStyleClass().add("nav-btn");
+        remindersBtn.setOnAction(e -> remindersView.show());
+        chapters.getChildren().add(remindersBtn);
         Button habitsBtn = new Button("Habits");
         habitsBtn.getStyleClass().add("nav-btn");
         habitsBtn.setOnAction(e -> habitsView.show());

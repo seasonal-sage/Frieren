@@ -63,8 +63,20 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 
+CREATE TABLE IF NOT EXISTS reminders (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    reminder_date TEXT NOT NULL,
+    message      TEXT NOT NULL,
+    entry_id     INTEGER REFERENCES memories (id) ON DELETE SET NULL,
+    repeat_type  TEXT NOT NULL DEFAULT 'none',
+    fired        INTEGER NOT NULL DEFAULT 0,
+    created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_memories_user_unlock ON memories (user_id, unlock_date);
 CREATE INDEX IF NOT EXISTS idx_memories_user_created ON memories (user_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_media_memory ON media (memory_id);
 CREATE INDEX IF NOT EXISTS idx_habit_logs_habit_date ON habit_logs (habit_id, log_date);
 CREATE INDEX IF NOT EXISTS idx_chat_user_id ON chat_messages (user_id, id);
+CREATE INDEX IF NOT EXISTS idx_reminders_user_date ON reminders (user_id, reminder_date);
