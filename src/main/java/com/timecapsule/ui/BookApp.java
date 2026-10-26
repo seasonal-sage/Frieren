@@ -15,6 +15,7 @@ import com.timecapsule.core.Memory;
 import com.timecapsule.scheduler.CapsuleScheduler;
 import com.timecapsule.storage.UserDao;
 import com.timecapsule.storage.ReminderDao;
+import com.timecapsule.storage.CheckpointDao;
 import com.timecapsule.ui.widgets.WoodTexture;
 import com.timecapsule.audio.SoundService;
 import javafx.animation.TranslateTransition;
@@ -65,8 +66,10 @@ public class BookApp extends Application {
     private HabitsView habitsView;
     private StatsView statsView;
     private RemindersView remindersView;
+    private CheckpointsView checkpointsView;
     private CapsuleScheduler capsuleScheduler;
     private final ReminderDao reminderDao = new ReminderDao();
+    private final CheckpointDao checkpointDao = new CheckpointDao();
     private final OllamaFairyProvider fairyBrain = new OllamaFairyProvider();
 
     @Override
@@ -136,6 +139,7 @@ public class BookApp extends Application {
         habitsView = new HabitsView(navigator, frieren, fairyBrain, this::buildContentsSpread);
         statsView = new StatsView(navigator, frieren, fairyBrain, this::buildContentsSpread);
         remindersView = new RemindersView(navigator, frieren, fairyBrain, this::buildContentsSpread);
+        checkpointsView = new CheckpointsView(navigator, frieren, fairyBrain, this::buildContentsSpread);
 
         // The seal-watcher: daemon thread, announces through Frieren.
         capsuleScheduler = new CapsuleScheduler(() -> {
@@ -320,6 +324,10 @@ public class BookApp extends Application {
         remindersBtn.getStyleClass().add("nav-btn");
         remindersBtn.setOnAction(e -> remindersView.show());
         chapters.getChildren().add(remindersBtn);
+        Button checkpointsBtn = new Button("Checkpoints");
+        checkpointsBtn.getStyleClass().add("nav-btn");
+        checkpointsBtn.setOnAction(e -> checkpointsView.show());
+        chapters.getChildren().add(checkpointsBtn);
         Button habitsBtn = new Button("Habits");
         habitsBtn.getStyleClass().add("nav-btn");
         habitsBtn.setOnAction(e -> habitsView.show());

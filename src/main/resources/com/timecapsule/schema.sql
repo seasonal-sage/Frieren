@@ -80,3 +80,17 @@ CREATE INDEX IF NOT EXISTS idx_media_memory ON media (memory_id);
 CREATE INDEX IF NOT EXISTS idx_habit_logs_habit_date ON habit_logs (habit_id, log_date);
 CREATE INDEX IF NOT EXISTS idx_chat_user_id ON chat_messages (user_id, id);
 CREATE INDEX IF NOT EXISTS idx_reminders_user_date ON reminders (user_id, reminder_date);
+
+CREATE TABLE IF NOT EXISTS checkpoints (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id       INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    title         TEXT NOT NULL,
+    description   TEXT,
+    target_date   TEXT,
+    status        TEXT NOT NULL DEFAULT 'pending',
+    created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    completed_at  TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_checkpoints_user_status ON checkpoints (user_id, status);
+CREATE INDEX IF NOT EXISTS idx_checkpoints_user_target ON checkpoints (user_id, target_date);
