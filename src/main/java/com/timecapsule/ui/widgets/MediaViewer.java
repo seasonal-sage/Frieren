@@ -51,14 +51,16 @@ public final class MediaViewer {
             Label faded = new Label("That keepsake has faded — its file is gone.");
             faded.getStyleClass().add("field-error");
             faded.setWrapText(true);
-            card.getChildren().addAll(title, faded);
-            dress(stage, card);
-            stage.show();
-            return;
+        card.getChildren().addAll(title, faded);
+        dress(stage, card, 600, 400);
+        stage.show();
+        return;
         }
         view.setPreserveRatio(true);
+        view.setFitWidth(1100);
+        view.setFitHeight(750);
         card.getChildren().addAll(title, view);
-        dress(stage, card);
+        dress(stage, card, 1200, 850);
         stage.show();
     }
 
@@ -87,7 +89,7 @@ public final class MediaViewer {
         HBox row = new HBox(10, play, progress, time);
         row.setAlignment(Pos.CENTER);
         card.getChildren().addAll(title, error, row);
-        dress(stage, card);
+        dress(stage, card, 500, 320);
 
         MediaPlayer player;
         try {
@@ -103,7 +105,7 @@ public final class MediaViewer {
         wire(player, play, progress, time, error);
         stage.setOnHidden(e -> rest(player));
         stage.show();
-        player.play();
+        player.setOnReady(() -> player.play());
     }
 
     /** Opens a moving picture with its own screen and player (autoplays, rests on close). */
@@ -136,7 +138,7 @@ public final class MediaViewer {
         HBox row = new HBox(10, play, progress, time);
         row.setAlignment(Pos.CENTER);
         card.getChildren().addAll(title, error, screen, row);
-        dress(stage, card);
+        dress(stage, card, 1000, 700);
 
         MediaPlayer player;
         try {
@@ -153,7 +155,7 @@ public final class MediaViewer {
         wire(player, play, progress, time, error);
         stage.setOnHidden(e -> rest(player));
         stage.show();
-        player.play();
+        player.setOnReady(() -> player.play());
     }
 
     /** Binds play/pause, scrub, clock, and error reporting to a player. */
@@ -209,13 +211,15 @@ public final class MediaViewer {
         return stage;
     }
 
-    private static void dress(Stage stage, VBox card) {
+    private static void dress(Stage stage, VBox card, double width, double height) {
         card.getStyleClass().add("media-card");
         card.setPadding(new Insets(16));
-        Scene scene = new Scene(card);
+        Scene scene = new Scene(card, width, height);
         scene.getStylesheets().add(
                 MediaViewer.class.getResource("/com/timecapsule/css/diary.css").toExternalForm());
         stage.setScene(scene);
+        stage.setMinWidth(width * 0.5);
+        stage.setMinHeight(height * 0.5);
     }
 
     private static String fmt(Duration moment) {

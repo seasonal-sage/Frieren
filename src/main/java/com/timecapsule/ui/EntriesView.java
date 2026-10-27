@@ -135,7 +135,10 @@ public class EntriesView {
         try {
             tagBox.getItems().setAll(EntrySearch.allTags());
         } catch (JournalException ignored) {
-            // Signed out — the rows below already say so.
+            // Signed out — dropdown stays empty.
+        }
+        if (tagBox.getItems().isEmpty()) {
+            tagBox.setPromptText("No tags yet — add one to an entry");
         }
         tagBox.setOnAction(e -> {
             EntrySearch.TagCount picked = tagBox.getValue();
